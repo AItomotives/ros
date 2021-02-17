@@ -11,6 +11,7 @@ from mavros_msgs.msg import WaypointList, Waypoint
 def callback(data):
     global remainingWaypoints
     global missionFinished
+    global curWaypoint
     if len(remainingWaypoints) == 0 and not missionFinished:
         for waypoint in data.waypoints:
             #if waypoint.command == goto
@@ -23,17 +24,26 @@ def callback(data):
             remainingWaypoints.append(waypoint)
     elif missionFinished:
         rospy.loginfo("We finished the mission")
-    else:
-        nextWaypointIndex = random.randrange(len(remainingWaypoints))
+    if not missionFinished:
 
-        nextWaypoint = remainingWaypoints[nextWaypointIndex]
-        remainingWaypoints.pop(nextWaypointIndex)
-        rospy.loginfo("next waypoint is a " + str(nextWaypoint.command) + "command. It has coordinates X: %s, Y: %s, Z: %s", nextWaypoint.x_lat, nextWaypoint.y_long, nextWaypoint.z_alt)
-            
-        pub = rospy.Publisher('decide_waypoint', GoToWaypoint, queue_size=10)
+        if curWaypoint == data.current_seq:
+            rospy.loginfo("waiting to do")
+        else:
+            rospy.loginfo("curwaypoint is set to " + str(curWaypoint) + " and current_seq is set to " + str(data.current_seq))
+            nextWaypointIndex = random.randrange(len(remainingWaypoints))
 
-        pub.publish(nextWaypointIndex)
+            nextWaypoint = remainingWaypoints[nextWaypointIndex]
+            remainingWaypoints.pop(nextWaypointIndex)
 
+            if len(remainingWaypoints) == 0:
+                missionFinished = True
+
+            rospy.loginfo("next waypoint is a " + str(nextWaypoint.command) + "command. It has coordinates X: %s, Y: %s, Z: %s", nextWaypoint.x_lat, nextWaypoint.y_long, nextWaypoint.z_alt)
+
+            pub = rospy.Publisher('decide_waypoint', GoToWaypoint, queue_size=10)
+
+            pub.publish(nextWaypointIndex)
+            curWaypoint = nextWaypointIndex
 
             # rospy.loginfo(rospy.get_caller_id() + "Waypoint number" + str(i) + " is X: %s, Y: %s, Z: %s", waypoint.x_lat, waypoint.y_long, waypoint.z_alt)
             # if waypoint.is_current:
@@ -60,4 +70,6 @@ if __name__ == '__main__':
     remainingWaypoints = []
     global missionFinished 
     missionFinished = False
+    global curWaypoint
+    curWaypoint = 1
     listener()
