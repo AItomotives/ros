@@ -1,5 +1,7 @@
 from mavros.msg import Waypoint, WaypointList
 
+import WPwrapper
+
 class WaypointManager:
 
     def __init__(self, nextWaypointStrategy):
@@ -21,16 +23,16 @@ class WaypointManager:
             elif waypoint.id == 21: #land?
                 pass
             atomic = AtomicWaypoint() #make atomic remember the original number
-            atomic.addwaypont(waypoint)
+            wrappedWP = WPWrapper(waypoint,i)
+            atomic.addwaypont(wrappedWP)
+            if waypoint.id in self.listOfCommandsWithRewards: # goto?
+                wrappedWP.setReward(waypointList.wa)
             if waypoint.id == 19: #return to home?
                 if waypointList.waypoints[i+2] == 21: #?land?
-                    atomic.addwaypoint(waypointList.waypoints[i+1])
-                    atomic.addwaypoint(waypointList.waypoints[i+2])
-                    atomic.addwaypoint(waypointList.waypoints[i+3])
-                else:
-                    atomic.addwaypoint(waypointList.waypoints[i+1])
-            elif waypoint.id in self.listOfCommandsWithRewards: # goto?
-                atomic.addwaypoint(waypointList.waypoints[i+1])
+                    landwp = WPWrapper(waypointList.waypoints[i+2])
+                    landwp.setReward(waypointList.waypoints[i+3].param1)
+                    atomic.addwaypoint(landwp, i+2)
+
             self.waypoints.append(atomic)
 
     def getNextWaypoint(self):
