@@ -6,50 +6,42 @@ import random
 from linearity.msg import GoToWaypoint
 from mavros_msgs.msg import WaypointList, Waypoint
 
+from WPWrapper import WPWrapper
+from WaypointManager import WaypointManager
+from RandomStrategy import RandomStrategy 
+from WPWrapper import WPWrapper
 
 
 def callback(data):
-    global remainingWaypoints
-    global missionFinished
-    global curWaypoint
-    if len(remainingWaypoints) == 0 and not missionFinished:
-        for waypoint in data.waypoints:
-            #if waypoint.command == goto
-                # check for a score
-                    # make an atomic
-            # if waypoint.command == rtl
-                # check for land 
-                    # make an atomic
-            #else
-            remainingWaypoints.append(waypoint)
-    elif missionFinished:
-        rospy.loginfo("We finished the mission")
-    if not missionFinished:
+    global needToBuild
+    global waypointManager
+    global curwaypoint
+    if needToBuild:
+        waypointManager.load_new_mission(data.waypoints)
 
-        if curWaypoint == data.current_seq:
-            rospy.loginfo("waiting to do")
-        else:
-            rospy.loginfo("curwaypoint is set to " + str(curWaypoint) + " and current_seq is set to " + str(data.current_seq))
-            nextWaypointIndex = random.randrange(len(remainingWaypoints))
+    
+    if curWaypoint == data.current_seq:
+        rospy.loginfo("waiting to do")
+    else:
+        rospy.loginfo("curwaypoint is set to " + str(curWaypoint) + " and current_seq is set to " + str(data.current_seq))
+        nextWaypointWrapped = waypointManager.getNextWaypoint()
+        curwaypoint = nextWaypointWrapped.
+            if nextWaypoint == "Mission Complete"
+                #do some stuff instead bc we finished the mission
+                return
 
-            nextWaypoint = remainingWaypoints[nextWaypointIndex]
-            remainingWaypoints.pop(nextWaypointIndex)
+        rospy.loginfo("next waypoint is a " + str(nextWaypoint.command) + " command. It has coordinates X: %s, Y: %s, Z: %s", nextWaypoint.x_lat, nextWaypoint.y_long, nextWaypoint.z_alt)
 
-            if len(remainingWaypoints) == 0:
-                missionFinished = True
+        pub = rospy.Publisher('decide_waypoint', GoToWaypoint, queue_size=10)
 
-            rospy.loginfo("next waypoint is a " + str(nextWaypoint.command) + "command. It has coordinates X: %s, Y: %s, Z: %s", nextWaypoint.x_lat, nextWaypoint.y_long, nextWaypoint.z_alt)
+        pub.publish(nextWaypointIndex)
+        curWaypoint = nextWaypointIndex
 
-            pub = rospy.Publisher('decide_waypoint', GoToWaypoint, queue_size=10)
-
-            pub.publish(nextWaypointIndex)
-            curWaypoint = nextWaypointIndex
-
-            # rospy.loginfo(rospy.get_caller_id() + "Waypoint number" + str(i) + " is X: %s, Y: %s, Z: %s", waypoint.x_lat, waypoint.y_long, waypoint.z_alt)
-            # if waypoint.is_current:
-            #     rospy.loginfo("========== Going to do ^this^ one now ==========")
-            # i += 1
-        rospy.loginfo("")
+        # rospy.loginfo(rospy.get_caller_id() + "Waypoint number" + str(i) + " is X: %s, Y: %s, Z: %s", waypoint.x_lat, waypoint.y_long, waypoint.z_alt)
+        # if waypoint.is_current:
+        #     rospy.loginfo("========== Going to do ^this^ one now ==========")
+        # i += 1
+    rospy.loginfo("")
 
 def listener():
 
@@ -66,10 +58,9 @@ def listener():
     rospy.spin()
 
 if __name__ == '__main__':
-    global remainingWaypoints
-    remainingWaypoints = []
-    global missionFinished 
-    missionFinished = False
-    global curWaypoint
-    curWaypoint = 1
+    global needToBuild
+    needToBuild = True
+    global waypointManager
+    waypointManager = WaypointManager(RandomStrategy())
+    global curwaypoint
     listener()

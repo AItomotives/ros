@@ -1,4 +1,4 @@
-from mavros.msg import Waypoint, WaypointList
+from mavros_msgs.msg import Waypoint, WaypointList
 
 class WaypointManager:
 
