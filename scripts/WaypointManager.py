@@ -1,13 +1,14 @@
 from mavros_msgs.msg import Waypoint, WaypointList
 
-import WPwrapper
+from WPWrapper import WPWrapper
+from AtomicWaypoints import AtomicWaypoints
 
 class WaypointManager:
 
     def __init__(self, nextWaypointStrategy):
         self.waypoints = []
         self.visited = []
-        self.listOfCommandsWithRewards = [16]
+        self.listOfCommandsWithRewards = [16,20]
         self.nextWaypointStrategy = nextWaypointStrategy
         self.currentAtomic = None
 
@@ -16,23 +17,25 @@ class WaypointManager:
         self.visited = []
         self.currentAtomic = None
         i = 0
-        while i < len(waypointList.waypoints):
-            waypoint = waypointList.waypoints[i]
-            if waypoint.id == 26: # rewards
+        while i < len(waypointList):
+            waypoint = waypointList[i]
+            if waypoint.command == 26: # rewards
                 pass
-            elif waypoint.id == 21: #land?
+            elif waypoint.command == 21: #land?
                 pass
-            atomic = AtomicWaypoint() #make atomic remember the original number
+            elif waypoint.command == 93: #DELAY (LOOK INTO THIS) 
+                pass
+            atomic = AtomicWaypoints([]) #make atomic remember the original number
             wrappedWP = WPWrapper(waypoint,i)
-            atomic.addwaypont(wrappedWP)
-            if waypoint.id in self.listOfCommandsWithRewards: # goto?
-                wrappedWP.setReward(waypointList.wa)
-            if waypoint.id == 19: #return to home?
+            atomic.addWaypoint(wrappedWP)
+            if waypoint.command in self.listOfCommandsWithRewards: # goto?
+                wrappedWP.setReward(waypointList[i+1].param1)
+            if waypoint.command == 19: #return to home?
                 if waypointList.waypoints[i+2] == 21: #?land?
-                    landwp = WPWrapper(waypointList.waypoints[i+2])
-                    landwp.setReward(waypointList.waypoints[i+3].param1)
-                    atomic.addwaypoint(landwp, i+2)
-
+                    landwp = WPWrapper(waypointList[i+2], i+2)
+                    landwp.setReward(waypointList[i+3].param1)
+                    atomic.addWaypoint(landwp)
+            i += 1
             self.waypoints.append(atomic)
 
     def getNextWaypoint(self):

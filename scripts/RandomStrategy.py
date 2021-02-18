@@ -1,5 +1,11 @@
+import random
+
 class RandomStrategy:
 
     def getNext(self, waypoints, visited):
-        if waypoints[-1].
-    
+        nextwp = None
+        while not nextwp:
+            test = random.choice(waypoints)
+            if test not in visited:
+                nextwp = test
+        return test

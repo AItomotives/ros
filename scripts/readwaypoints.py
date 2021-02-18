@@ -20,22 +20,24 @@ def callback(data):
         waypointManager.load_new_mission(data.waypoints)
 
     
-    if curWaypoint == data.current_seq:
+    if curwaypoint == data.current_seq:
         rospy.loginfo("waiting to do")
     else:
-        rospy.loginfo("curwaypoint is set to " + str(curWaypoint) + " and current_seq is set to " + str(data.current_seq))
         nextWaypointWrapped = waypointManager.getNextWaypoint()
-        curwaypoint = nextWaypointWrapped.
-            if nextWaypoint == "Mission Complete"
-                #do some stuff instead bc we finished the mission
-                return
-
+        nextWpPos = nextWaypointWrapped.positionInList
+        rospy.loginfo("curwaypoint is set to " + str(nextWpPos) + " and current_seq is set to " + str(data.current_seq))
+        
+        if nextWaypointWrapped == "Mission Complete":
+            #do some stuff instead bc we finished the mission
+            return
+        
+        nextWaypoint = nextWaypointWrapped.waypoint
         rospy.loginfo("next waypoint is a " + str(nextWaypoint.command) + " command. It has coordinates X: %s, Y: %s, Z: %s", nextWaypoint.x_lat, nextWaypoint.y_long, nextWaypoint.z_alt)
 
         pub = rospy.Publisher('decide_waypoint', GoToWaypoint, queue_size=10)
 
-        pub.publish(nextWaypointIndex)
-        curWaypoint = nextWaypointIndex
+        pub.publish(nextWpPos)
+        curwaypoint = nextWpPos
 
         # rospy.loginfo(rospy.get_caller_id() + "Waypoint number" + str(i) + " is X: %s, Y: %s, Z: %s", waypoint.x_lat, waypoint.y_long, waypoint.z_alt)
         # if waypoint.is_current:
@@ -63,4 +65,5 @@ if __name__ == '__main__':
     global waypointManager
     waypointManager = WaypointManager(RandomStrategy())
     global curwaypoint
+    curwaypoint = None
     listener()

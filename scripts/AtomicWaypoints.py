@@ -6,13 +6,13 @@ class AtomicWaypoints:
         if waypoints:
             self.waypoints = []
             for waypoint in waypoints:
-            self.waypoints.append(waypoint)
+                self.waypoints.append(waypoint)
         else:
             self.waypoints = []
         self.curwaypoint = 0
 
-    def addwaypoint(self, waypoint):
-        self.waypoints.push(waypoint)
+    def addWaypoint(self, waypoint):
+        self.waypoints.append(waypoint)
 
     def getNextWaypoint(self):
         self.curwaypoint += 1
