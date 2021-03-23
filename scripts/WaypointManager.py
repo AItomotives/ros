@@ -12,6 +12,7 @@ class WaypointManager:
         self.nextWaypointStrategy = nextWaypointStrategy
         self.currentAtomic = None
 
+    # TODO Revisit this logic
     def load_new_mission(self, waypointList):
         self.waypoints = []
         self.visited = []
