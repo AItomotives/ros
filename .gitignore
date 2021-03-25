@@ -2,3 +2,6 @@
 devel_isolated
 build_isolated
 .vscode
+devel
+build
+.catkin_workspace
