@@ -15,11 +15,14 @@ class AtomicWaypoints:
         self.waypoints.append(waypoint)
 
     def getNextWaypoint(self):
-        self.curwaypoint += 1
-        return self.waypoints[self.curwaypoint-1]
+        print("Atomic: getting next waypoint")
+        print("currentwaypoint is now", self.curwaypoint)
+        retval = self.waypoints[self.curwaypoint]
+        self.curwaypoint +=1
+        return retval
     
     def isCompleted(self):
-        return self.curwaypoint == len(self.waypoints)
+        return self.curwaypoint >= len(self.waypoints)
 
     def getRewardValue():
         total = 0
