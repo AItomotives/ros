@@ -9,6 +9,7 @@ from mavros_msgs.msg import WaypointList, Waypoint
 from WPWrapper import WPWrapper
 from WaypointManager import WaypointManager
 from RandomStrategy import RandomStrategy 
+from SmartStrategy import SmartStrategy
 from WPWrapper import WPWrapper
 
 
@@ -68,7 +69,7 @@ if __name__ == '__main__':
     global needToBuild
     needToBuild = True
     global waypointManager
-    waypointManager = WaypointManager(RandomStrategy())
+    waypointManager = WaypointManager(SmartStrategy())
     global curwaypoint
     curwaypoint = 1
     listener()

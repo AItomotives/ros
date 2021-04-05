@@ -24,7 +24,7 @@ class AtomicWaypoints:
     def isCompleted(self):
         return self.curwaypoint >= len(self.waypoints)
 
-    def getRewardValue():
+    def getRewardValue(self):
         total = 0
         for wp in self.waypoints:
             total += wp.rewardvalue
