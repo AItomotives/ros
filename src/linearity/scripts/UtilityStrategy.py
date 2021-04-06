@@ -1,4 +1,4 @@
-from ros.src.linearity.scripts import WPWrapper, DroneState
+from WPWrapper import WPWrapper
 import math
 import predict
 
@@ -16,7 +16,7 @@ class UtilityStrategy:
         return math.sqrt(math.pow(waypoint.x_lat - currentX, 2) + math.pow(waypoint.y_long - currentY, 2) + math.pow(waypoint.z_alt - currentZ, 2))
 
 
-    def getWaypointCosts(self, waypoint, dronestate: DroneState):
+    def getWaypointCosts(self, waypoint, dronestate):
         data = dronestate.getdata()
         distance = self._calcDistance(waypoint, data)
         batteryStuff = predict(self.eval_script_path, self.genome_path, data)
@@ -34,7 +34,7 @@ class UtilityStrategy:
                 if WPWrapper.CommandID == 21:
                     return atomic_waypoint
 
-    def getNext(self, waypoints, visited, dronestate: DroneState):
+    def getNext(self, waypoints, visited, dronestate):
         next_wp = None
         next_utility = -100
         if visited.len() == 0:
