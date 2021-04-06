@@ -7,7 +7,7 @@ def predict(evaluate_binary,genome, stateList):
         writer.writeheader()
         for state in stateList:
             writer.writerow(state)
-        cmd = "/" + evaluate_binary +" --output_directory ./prediction --genome_file " + genome + " --testing_filenames /home/chris/exact/build/state.csv  --std_message_level INFO --file_message_level INFO --time_offset 1" 
+        cmd = "/" + evaluate_binary +" --output_directory ./prediction --genome_file " + genome + " --testing_filenames state.csv  --std_message_level INFO --file_message_level INFO --time_offset 1" 
         os.system(cmd)
     with open('prediction/state_predictions.csv' , newline = '') as result:
         reader = csv.DictReader(result)
