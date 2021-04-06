@@ -37,7 +37,7 @@ class UtilityStrategy:
     def getNext(self, waypoints, visited, dronestate: DroneState):
         next_wp = None
         next_utility = -100
-        if visited.len() = 0:
+        if visited.len() == 0:
 
             for atomic_waypoint in waypoints:
                 if atomic_waypoint != self.getReturnWaypoint(waypoints):
