@@ -5,8 +5,8 @@ import predict
 
 class UtilityStrategy:
 
-    path = '\\\\wsl$\\Ubuntu-18.04\\home\\bgood12\\exact\\build\\rnn_examples\\evaluate_rnn'
-    genome = 'C:\\Users\\rasca\\Downloads\\rnn_genome_1994.bin'
+    eval_script_path = '~/exact/build/rnn_examples/evaluate_rnn'
+    genome_path = '../rnn_genome_1994.bin'
 
     def _calcDistance(self, waypoint, data):
         currentX = data[-1].get("position_x")
@@ -23,7 +23,7 @@ class UtilityStrategy:
     def getWaypointCosts(self, waypoint, dronestate: DroneState):
         data = dronestate.getdata()
         distance = self._calcDistance(waypoint, data)
-        batteryStuff = predict(self.path, self.genome, data)
+        batteryStuff = predict(self.eval_script_path, self.genome_path, data)
 
         return batteryStuff / distance
 
