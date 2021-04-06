@@ -14,6 +14,8 @@ def predict(evaluate_binary,genome, stateList):
         result = {}
         for row in reader:
             result['battery_voltage'] = row['predicted_battery_voltage']
-            result['battery_current'] = row['predicted_battery_current']
+            result['position_x'] = row['predicted_position_x']
+            result['position_y'] = row['predicted_position_y']
+            result['position_z'] = row['predicted_position_z']
         return result
     
