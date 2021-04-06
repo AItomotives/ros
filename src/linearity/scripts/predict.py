@@ -1,5 +1,7 @@
 import os
 import csv
+
+
 def predict(evaluate_binary,genome, stateList):
     fields = ["time","wind_speed","wind_angle","battery_voltage","battery_current","position_x","position_y","position_z","orientation_x","orientation_y","orientation_z","orientation_w","velocity_x","velocity_y","velocity_z","angular_x","angular_y","angular_z","linear_acceleration_x","linear_acceleration_y","linear_acceleration_z"]
     with open('state.csv' , 'w', newline = '') as outputfile:

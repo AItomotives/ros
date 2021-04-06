@@ -1,5 +1,6 @@
 from ros.src.linearity.scripts import WPWrapper, DroneState
 import math
+import predict
 
 
 class UtilityStrategy:
@@ -7,11 +8,10 @@ class UtilityStrategy:
     path = '\\\\wsl$\\Ubuntu-18.04\\home\\bgood12\\exact\\build\\rnn_examples\\evaluate_rnn'
     genome = 'C:\\Users\\rasca\\Downloads\\rnn_genome_1994.bin'
 
-    def _calcDistance(self, waypoint, dronestate: DroneState):
-        data = dronestate.getdata()
-        # currentX = data[-1].get("position_x")
-        # currentY = data[-1].get("position_y")
-        # currentZ = data[-1].get("position_z")
+    def _calcDistance(self, waypoint, data):
+        currentX = data[-1].get("position_x")
+        currentY = data[-1].get("position_y")
+        currentZ = data[-1].get("position_z")
         # todo delete these once the above works
         currentX = DroneState.DroneState.position_x
         currentY = DroneState.DroneState.position_y
@@ -21,13 +21,13 @@ class UtilityStrategy:
 
 
     def getWaypointCosts(self, waypoint, dronestate: DroneState):
-        distance = self._calcDistance(waypoint, dronestate)
-        batteryLossRate = self.getBatteryCurrent(dronestate)
-
-        return batteryLossRate * distance * -1 # The -1 gives us a positive cost because current is negative when discharging, which is always
-
-    def getBatteryCurrent(self, dronestate: DroneState):
         data = dronestate.getdata()
+        distance = self._calcDistance(waypoint, data)
+        batteryStuff = predict(self.path, self.genome, data)
+
+        return batteryStuff / distance
+
+    def getBatteryCurrent(self, data):
         return data[-1].get("battery_current")
 
 
