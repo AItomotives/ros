@@ -1,11 +1,12 @@
 #!/usr/bin/env python
 
-import rospy
+import rospy, json
 from collections import deque
 from mavros_msgs.msg import Param, GPSRAW
 from sensor_msgs.msg import BatteryState
 from geometry_msgs.msg import TwistStamped, PoseStamped
 from std_msgs.msg import String
+from linearity.srv import DroneData
 
 class DroneState:
 
@@ -98,6 +99,9 @@ def updateDroneState(message, ds):
     else:
         print("not doing stuff")
 
+def getDroneState(message):
+    global ds
+    return json.dumps(list(ds.state_list))
 
 def spinfunc(ds):
     rospy.init_node('DroneStateNode', anonymous=True)
@@ -107,6 +111,7 @@ def spinfunc(ds):
     rospy.Subscriber("mavros/battery", BatteryState, updateDroneState, ds)
     rospy.Subscriber("mavros/local_position/velocity_local", TwistStamped, updateDroneState, ds)
     rospy.Subscriber("mavros/local_position/pose", PoseStamped, updateDroneState, ds)
+    s = rospy.Service('linearity/get_data', DroneData, getDroneState)
     # pub = rospy.Publisher('linearity/data', String, queue_size=100)
 
     while not rospy.is_shutdown():
@@ -118,6 +123,7 @@ def spinfunc(ds):
 
 
 if __name__ == '__main__':
+    global ds
     ds = DroneState()
     ds.state_list.append(ds.droneSnapshot())
     spinfunc(ds)

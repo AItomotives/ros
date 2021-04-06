@@ -36,7 +36,7 @@ class WaypointManager:
                 self.waypoints.append(atomic)
         print("we finished building the waypoints. currently there are " + str(len(self.waypoints)) + "waypoints")
 
-    def getNextWaypoint(self):
+    def getNextWaypoint(self, droneData):
         print("getting next waypoint")
         if self.currentAtomic:
             print("has an atomic")
@@ -47,10 +47,10 @@ class WaypointManager:
                 self.visited.append(self.currentAtomic)
                 self.currentAtomic = None
             return wp
-        elif not self.visited:
-            print("There is no visited so we set the current thing were doing to the takeoff")
-            self.currentAtomic = self.waypoints[0]
-            return self.getNextWaypoint()
+        # elif not self.visited:
+        #     print("There is no visited so we set the current thing were doing to the takeoff")
+        #     self.currentAtomic = self.waypoints[0]
+        #     return self.getNextWaypoint()
         elif len(self.visited) == len(self.waypoints):
             print("Mission Complete")
             return "Mission Complete"
@@ -59,5 +59,5 @@ class WaypointManager:
             #Just set self.currentAtomic to something not in visited
             #and return self.getNextWaypoint
             print("calling the strategy to get us a next atomic")
-            self.currentAtomic = self.nextWaypointStrategy.getNext(self.waypoints, self.visited)
+            self.currentAtomic = self.nextWaypointStrategy.getNext(self.waypoints, self.visited, droneData)
             return self.getNextWaypoint()
