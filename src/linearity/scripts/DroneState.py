@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import rospy
+from collections import deque
 from mavros_msgs.msg import Param, GPSRAW
 from sensor_msgs.msg import BatteryState
 from geometry_msgs.msg import TwistStamped, PoseStamped
@@ -9,9 +10,10 @@ from std_msgs.msg import String
 class DroneState:
 
     def __init__(self):
-        self.time_interval = 5
+        self.time_interval = 0.5
         self.curr_time = 0
-        self.state_list = []
+        self.state_list = deque()
+        self.statesTracked = 0
         self.wind_speed = 0
         self.wind_angle = 0
         self.battery_voltage = 0
@@ -32,6 +34,14 @@ class DroneState:
         self.linear_acceleration_x = 0
         self.linear_acceleration_y = 0
         self.linear_acceleration_z = 0
+
+    def updateStateList(self):
+        if self.statesTracked < 200:
+            self.state_list.append(self.droneSnapshot())
+        else:
+            self.state_list.popleft()
+            self.state_list.append(self.droneSnapshot())
+
 
     def droneSnapshot(self):
         
@@ -74,13 +84,13 @@ def updateDroneState(message, ds):
         ds.angular_y = round(message.twist.angular.y, 4)
         ds.angular_z = round(message.twist.angular.z, 4)
     elif isinstance(message, PoseStamped):
-        ds.position_x = round(message.pose.position.x, 4)
-        ds.position_y = round(message.pose.position.y, 4)
-        ds.position_z = round(message.pose.position.z, 4)
-        ds.orientation_w = round(message.pose.orientation.w, 4)
-        ds.orientation_x = round(message.pose.orientation.x, 4)
-        ds.orientation_y = round(message.pose.orientation.y, 4)
-        ds.orientation_z = round(message.pose.orientation.z, 4)
+        ds.position_x = round(message.pose.position.x, 6)
+        ds.position_y = round(message.pose.position.y, 6)
+        ds.position_z = round(message.pose.position.z, 6)
+        ds.orientation_w = round(message.pose.orientation.w, 6)
+        ds.orientation_x = round(message.pose.orientation.x, 6)
+        ds.orientation_y = round(message.pose.orientation.y, 6)
+        ds.orientation_z = round(message.pose.orientation.z, 6)
     elif isinstance(message, String) or message == "datapls":
         #gonna publish to a new topic here
         print ds.droneSnapshot()
@@ -91,17 +101,21 @@ def updateDroneState(message, ds):
 
 def spinfunc(ds):
     rospy.init_node('DroneStateNode', anonymous=True)
-    r = rospy.Rate(0.5)
+    r = rospy.Rate(1/ds.time_interval)
     #This is possible to use but its raw gps data and harder to work with
     #rospy.Subscriber("mavros/gpsstatus/gps1/raw", GPSRAW, updateDroneState)
     rospy.Subscriber("mavros/battery", BatteryState, updateDroneState, ds)
     rospy.Subscriber("mavros/local_position/velocity_local", TwistStamped, updateDroneState, ds)
     rospy.Subscriber("mavros/local_position/pose", PoseStamped, updateDroneState, ds)
-    rospy.Subscriber("linearity/request_data", String, updateDroneState, ds)
-    
+    # pub = rospy.Publisher('linearity/data', String, queue_size=100)
+
     while not rospy.is_shutdown():
+        # pub.publish()
+        ds.curr_time += ds.time_interval
+        ds.updateStateList()
         r.sleep()  
-    
+
+
 
 if __name__ == '__main__':
     ds = DroneState()
