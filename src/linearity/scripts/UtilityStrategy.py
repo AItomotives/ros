@@ -12,10 +12,6 @@ class UtilityStrategy:
         currentX = data[-1].get("position_x")
         currentY = data[-1].get("position_y")
         currentZ = data[-1].get("position_z")
-        # todo delete these once the above works
-        currentX = DroneState.DroneState.position_x
-        currentY = DroneState.DroneState.position_y
-        currentZ = DroneState.DroneState.position_z
         # Calculate distance between the two points
         return math.sqrt(math.pow(waypoint.x_lat - currentX, 2) + math.pow(waypoint.y_long - currentY, 2) + math.pow(waypoint.z_alt - currentZ, 2))
 
