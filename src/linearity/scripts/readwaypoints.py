@@ -29,7 +29,7 @@ def callback(data):
     if curwaypoint == data.current_seq:
         rospy.loginfo("waiting to do")
     else:
-        nextWaypointWrapped = waypointManager.getNextWaypoint(json.loads(getDroneData("").datajson))
+        nextWaypointWrapped = waypointManager.getNextWaypoint(getDroneData)
         if (nextWaypointWrapped == "Mission Complete"):
             print("Ladies and gentlemen, we gottem")
         else:

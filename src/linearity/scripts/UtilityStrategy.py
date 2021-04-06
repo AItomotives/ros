@@ -9,10 +9,11 @@ class UtilityStrategy:
     genome_path = '../rnn_genome_1994.bin'
 
     def _calcDistance(self, waypoint, data):
-        currentX = data[-1].get("position_x")
-        currentY = data[-1].get("position_y")
-        currentZ = data[-1].get("position_z")
+        currentX = data.get("position_x")
+        currentY = data.get("position_y")
+        currentZ = data.get("position_z")
         # Calculate distance between the two points
+        waypoint = waypoint.waypoints[0].waypoint
         return math.sqrt(math.pow(waypoint.x_lat - currentX, 2) + math.pow(waypoint.y_long - currentY, 2) + math.pow(waypoint.z_alt - currentZ, 2))
 
 
@@ -27,22 +28,22 @@ class UtilityStrategy:
         return data[-1].get("battery_current")
 
 
-    def getReturnWaypoint(waypoints):
+    def getReturnWaypoint(self, waypoints):
         # searches in the list of waypoints for the waypoint detailing a return to home, and returns it
         for atomic_waypoint in waypoints:
             for WPWapper in atomic_waypoint.waypoints:
-                if WPWrapper.CommandID == 21:
+                if WPWapper.commandID == 21:
                     return atomic_waypoint
 
     def getNext(self, waypoints, visited, dronestate):
         next_wp = None
         next_utility = -100
-        if visited.len() == 0:
+        if len(visited) == 0:
 
             for atomic_waypoint in waypoints:
                 if atomic_waypoint != self.getReturnWaypoint(waypoints):
                     wp_reward = atomic_waypoint.getRewardValue()
-                    wp_dist = self._calcDistance(atomic_waypoint, dronestate.getdata())
+                    wp_dist = self._calcDistance(atomic_waypoint, dronestate[-1])
 
                     wp_utility = wp_reward / wp_dist
 

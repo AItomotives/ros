@@ -1,3 +1,5 @@
+import json
+
 from mavros_msgs.msg import Waypoint, WaypointList
 
 from WPWrapper import WPWrapper
@@ -36,7 +38,7 @@ class WaypointManager:
                 self.waypoints.append(atomic)
         print("we finished building the waypoints. currently there are " + str(len(self.waypoints)) + "waypoints")
 
-    def getNextWaypoint(self, droneData):
+    def getNextWaypoint(self, droneDatafunc):
         print("getting next waypoint")
         if self.currentAtomic:
             print("has an atomic")
@@ -59,5 +61,5 @@ class WaypointManager:
             #Just set self.currentAtomic to something not in visited
             #and return self.getNextWaypoint
             print("calling the strategy to get us a next atomic")
-            self.currentAtomic = self.nextWaypointStrategy.getNext(self.waypoints, self.visited, droneData)
+            self.currentAtomic = self.nextWaypointStrategy.getNext(self.waypoints, self.visited, json.loads(droneDatafunc("").datajson))
             return self.getNextWaypoint()
