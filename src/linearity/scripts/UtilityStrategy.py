@@ -20,7 +20,7 @@ class UtilityStrategy:
 
     def getWaypointCosts(self, waypoint, dronestate):
         distance = self._calcDistance(waypoint, dronestate[-1])
-        batteryStuff = predict(self.eval_script_path, self.genome_path, dronestate[-1])
+        batteryStuff = predict(self.eval_script_path, self.genome_path, dronestate)
 
         return batteryStuff / distance
 
