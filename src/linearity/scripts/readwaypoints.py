@@ -15,12 +15,17 @@ from SmartStrategy import SmartStrategy
 from UtilityStrategy import UtilityStrategy
 from WPWrapper import WPWrapper
 
+def getDroneData():
+        rospy.wait_for_service('/linearity/get_data')
+
+        getDroneData = rospy.ServiceProxy('/linearity/get_data', DroneData)
+
+        return json.loads(getDroneData("").datajson)
 
 def callback(data):
     global needToBuild
     global waypointManager
     global curwaypoint
-    global getDroneData
     if needToBuild:
         waypointManager.load_new_mission(data.waypoints)
         needToBuild = False
@@ -65,10 +70,6 @@ def listener():
     rospy.init_node('ainav', anonymous=True)
 
     rospy.Subscriber("mavros/mission/waypoints", WaypointList, callback)
-    rospy.wait_for_service('/linearity/get_data')
-    global getDroneData
-    getDroneData = rospy.ServiceProxy('/linearity/get_data', DroneData)
-
 
     # spin() simply keeps python from exiting until this node is stopped
     rospy.spin()
@@ -79,5 +80,5 @@ if __name__ == '__main__':
     global waypointManager
     waypointManager = WaypointManager(UtilityStrategy())
     global curwaypoint
-    curwaypoint = 1
+    curwaypoint = 0
     listener()

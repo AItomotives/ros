@@ -61,5 +61,5 @@ class WaypointManager:
             #Just set self.currentAtomic to something not in visited
             #and return self.getNextWaypoint
             print("calling the strategy to get us a next atomic")
-            self.currentAtomic = self.nextWaypointStrategy.getNext(self.waypoints, self.visited, json.loads(droneDatafunc("").datajson))
+            self.currentAtomic = self.nextWaypointStrategy.getNext(self.waypoints, self.visited, droneDatafunc())
             return self.getNextWaypoint()
