@@ -1,6 +1,6 @@
 from WPWrapper import WPWrapper
 import math
-import predict
+from predict import predict
 
 
 class UtilityStrategy:
@@ -13,6 +13,7 @@ class UtilityStrategy:
         currentY = data.get("position_y")
         currentZ = data.get("position_z")
         # Calculate distance between the two points
+        print("_calcdistance waypoint is: ", waypoint)
         waypoint = waypoint.waypoints[0].waypoint
         return math.sqrt(math.pow(waypoint.x_lat - currentX, 2) + math.pow(waypoint.y_long - currentY, 2) + math.pow(waypoint.z_alt - currentZ, 2))
 
@@ -31,7 +32,7 @@ class UtilityStrategy:
         # searches in the list of waypoints for the waypoint detailing a return to home, and returns it
         for atomic_waypoint in waypoints:
             for WPWapper in atomic_waypoint.waypoints:
-                if WPWapper.commandID == 21:
+                if WPWapper.commandID == 20:
                     return atomic_waypoint
 
     def getNext(self, waypoints, visited, dronestate):
@@ -49,9 +50,6 @@ class UtilityStrategy:
                     if wp_utility > next_utility:
                         next_wp = atomic_waypoint
                         next_utility = wp_utility
-            
-            print("waypoint was chosen and it is worth", next_utility, "points")
-            return next_wp
 
         else:
             home_wp = self.getReturnWaypoint(waypoints)
@@ -70,6 +68,6 @@ class UtilityStrategy:
                         next_wp = atomic_waypoint
                         next_utility = wp_utility
 
-            print("waypoint was chosen and it is worth", next_utility, "points")
-            return next_wp
+        print("waypoint was chosen and it is worth", next_utility, "points")
+        return next_wp
               

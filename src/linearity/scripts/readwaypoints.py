@@ -48,8 +48,7 @@ def callback(data):
             nextWaypoint = nextWaypointWrapped.waypoint
             rospy.loginfo("next waypoint is a " + str(nextWaypoint.command) + " command. It has coordinates X: %s, Y: %s, Z: %s", nextWaypoint.x_lat, nextWaypoint.y_long, nextWaypoint.z_alt)
 
-            if (data.current_seq != 1):
-                pub = rospy.Publisher('decide_waypoint', GoToWaypoint, queue_size=10)
+            pub = rospy.Publisher('decide_waypoint', GoToWaypoint, queue_size=10)
 
             pub.publish(nextWpPos)
             curwaypoint = nextWpPos

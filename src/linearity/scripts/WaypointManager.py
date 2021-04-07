@@ -30,8 +30,8 @@ class WaypointManager:
                 atomic.addWaypoint(wrappedWP)
                 if waypoint.command in self.listOfCommandsWithRewards: # goto?
                     wrappedWP.setReward(waypointList[i+1].param1)
-                if waypoint.command == 19: #return to home?
-                    if waypointList.waypoints[i+2] == 21: #?land?
+                if waypoint.command == 20: #return to home?
+                    if waypointList[i+2] == 21: #?land?
                         landwp = WPWrapper(waypointList[i+2], i+2)
                         landwp.setReward(waypointList[i+3].param1)
                         atomic.addWaypoint(landwp)
@@ -62,4 +62,4 @@ class WaypointManager:
             #and return self.getNextWaypoint
             print("calling the strategy to get us a next atomic")
             self.currentAtomic = self.nextWaypointStrategy.getNext(self.waypoints, self.visited, droneDatafunc())
-            return self.getNextWaypoint()
+            return self.getNextWaypoint(droneDatafunc)
