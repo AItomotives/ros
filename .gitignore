@@ -5,4 +5,5 @@ build_isolated
 devel
 build
 .catkin_workspace
-state.csv
+states/*
+prediction/*
