@@ -1,8 +1,10 @@
 import os
 import csv
+import time
 
 
 def predict(stateList, counter):
+    print("#####Starting to Predict#####")
     evaluate_binary = '/exact/evaluate_rnn'
     genome = '/catkin_ws/genomes/truncated_current_position_genome.bin'
 
@@ -13,9 +15,10 @@ def predict(stateList, counter):
         writer = csv.DictWriter(outputfile, fieldnames=fields)
         writer.writeheader()
         for state in stateList:
-            writer.writerow(state)
-        cmd = evaluate_binary +" --output_directory ./prediction --genome_file " + genome + " --testing_filenames " + state_file_name + " --std_message_level INFO --file_message_level INFO --time_offset 1" 
-        os.system(cmd)
+            if len(state) == len(fields):
+                writer.writerow(state)
+    cmd = evaluate_binary +" --output_directory ./prediction --genome_file " + genome + " --testing_filenames " + state_file_name + " --std_message_level INFO --file_message_level INFO --time_offset 1" 
+    os.system(cmd)
     with open(prediction_file_name) as result:
         reader = csv.DictReader(result)
         return_val = {}

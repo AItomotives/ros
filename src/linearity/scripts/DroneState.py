@@ -42,7 +42,7 @@ class DroneState:
         else:
             self.state_list.popleft()
             self.state_list.append(self.droneSnapshot())
-
+        self.statesTracked += 1
 
     def droneSnapshot(self):
         
@@ -101,6 +101,7 @@ def updateDroneState(message, ds):
 
 def getDroneState(message):
     global ds
+    print("new drone state list requested")
     return json.dumps(list(ds.state_list))
 
 def spinfunc(ds):

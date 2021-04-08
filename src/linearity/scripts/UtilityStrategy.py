@@ -19,11 +19,11 @@ class UtilityStrategy:
 
     def getWaypointCosts(self, waypoint, dronestate):
         distance = self._calcDistance(waypoint, dronestate[-1])
-        batteryStuff = predict(dronestate, self.counter)
         self.counter += 1
+        predictions = predict(dronestate, self.counter)
+        predictedBatteryDifference = predictions['battery_voltage']
 
-
-        return batteryStuff / distance
+        return float(predictedBatteryDifference) / distance
 
     def getBatteryCurrent(self, data):
         return data[-1].get("battery_current")

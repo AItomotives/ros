@@ -31,7 +31,7 @@ def callback(data):
         needToBuild = False
 
     print("curwaypoint: ", curwaypoint, "data.current_seq: ", data.current_seq)
-    if curwaypoint == data.current_seq:
+    if curwaypoint == data.current_seq or curwaypoint == data.current_seq - 1:
         rospy.loginfo("waiting to do")
     else:
         nextWaypointWrapped = waypointManager.getNextWaypoint(getDroneData)
