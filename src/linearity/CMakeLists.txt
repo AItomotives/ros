@@ -53,11 +53,10 @@ add_message_files(
 )
 
 ## Generate services in the 'srv' folder
-# add_service_files(
-#   FILES
-#   Service1.srv
-#   Service2.srv
-# )
+add_service_files(
+  FILES
+  DroneData.srv
+)
 
 ## Generate actions in the 'action' folder
 # add_action_files(
@@ -158,7 +157,7 @@ include_directories(
 
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
-catkin_install_python(PROGRAMS scripts/linearbreak.py scripts/readwaypoints.py scripts/WPWrapper.py
+catkin_install_python(PROGRAMS scripts/linearbreak.py scripts/readwaypoints.py scripts/DroneState.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

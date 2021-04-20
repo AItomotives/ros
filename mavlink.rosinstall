@@ -1,0 +1,5 @@
+- git:
+    local-name: mavlink
+    uri: https://github.com/AItomotives/mavlink-gbp-release.git
+    version: release/kinetic/mavlink/aitomotive1.0
+

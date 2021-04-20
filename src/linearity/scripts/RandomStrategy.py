@@ -8,4 +8,4 @@ class RandomStrategy:
             test = random.choice(waypoints)
             if test not in visited:
                 nextwp = test
-        return test
+        return nextwp
