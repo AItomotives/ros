@@ -2,6 +2,7 @@ from WPWrapper import WPWrapper
 import math
 from predict import predict
 
+LOOKAHEAD_DEPTH = 1
 
 class UtilityStrategy:
 
@@ -67,7 +68,7 @@ class UtilityStrategy:
         z = home_wp.waypoints[0].waypoint.z_alt
         return x,y,z
 
-    def calcUtility(self, atomic_waypoint, waypoints, visited, dronestate):
+    def calcUtility(self, atomic_waypoint, waypoints, visited, dronestate, depth=0):
         home_wp = self.getReturnWaypoint(waypoints)
         home_cost = self.getWaypointCosts(home_wp, dronestate)
         
@@ -75,15 +76,17 @@ class UtilityStrategy:
 
         wp_cost_distance = self.getWaypointCosts(atomic_waypoint, dronestate)
         wp_reward = atomic_waypoint.getRewardValue()
-        wp_utility = wp_reward - wp_cost_distance[0]
+        single_wp_utility = wp_reward - wp_cost_distance[0]
 
-        if wp_utility > next_utility:
-            next_wp = atomic_waypoint
-            next_utility = wp_utility
-            chosen_dist = wp_cost_distance[1]
-            print("Reward: ", wp_reward)
-            print("Utility: ", wp_utility)
-            print("Distance: ", wp_cost_distance)
+        total_utility = single_wp_utility
+
+        if depth < LOOKAHEAD_DEPTH:
+            for atomic_waypoint_lookahead in waypoints:
+                if not atomic_waypoint_lookahead == atomic_waypoint and atomic_waypoint_lookahead not in visited:
+                    lookahead_utility = calcUtility(atomic_waypoint_lookahead, waypoints, visited, dronestate, depth+1)
+                    if single_wp_utility + lookahead_utility > total_utility
+                        total_utility = single_wp_utility + lookahead_utility
+        return total_utility
 
     def getNext(self, waypoints, visited, dronestate):
         
@@ -93,7 +96,14 @@ class UtilityStrategy:
 
         for atomic_waypoint in waypoints:
             if atomic_waypoint not in visited:
-                calcUtility(atomic_waypoint, waypoints, visited, dronestate)
+                wputility = calcUtility(atomic_waypoint, waypoints, visited, dronestate)
+                if wp_utility > next_utility:
+                next_wp = atomic_waypoint
+                next_utility = wp_utility
+                chosen_dist = wp_cost_distance[1]
+                print("Reward: ", wp_reward)
+                print("Utility: ", wp_utility)
+                print("Distance: ", wp_cost_distance)
 
         print("waypoint was chosen and it is worth", next_utility, "points")
         self.drone_range -= chosen_dist
