@@ -6,6 +6,7 @@ from predict import predict
 class UtilityStrategy:
 
     counter = 0
+    drone_range = 1215 #Meters
 
     def _calcDistance(self, waypoint, data):
         currentX = data.get("position_x")
@@ -18,12 +19,16 @@ class UtilityStrategy:
 
 
     def getWaypointCosts(self, waypoint, dronestate):
-        distance = self._calcDistance(waypoint, dronestate[-1])
+
         self.counter += 1
         predictions = predict(dronestate, self.counter)
-        predictedBatteryDifference = predictions['battery_voltage']
+        distance =  float(self._calcDistance(waypoint, predictions))
+        if distance < self.drone_range:
+            cost =  distance * math.e**(1/(-1*(distance-self.drone_range))) + distance
+        else:
+            cost = float("inf")
+        return cost,distance
 
-        return float(predictedBatteryDifference) / distance
 
     def getBatteryCurrent(self, data):
         return data[-1].get("battery_current")
@@ -39,6 +44,7 @@ class UtilityStrategy:
     def getNext(self, waypoints, visited, dronestate):
         next_wp = None
         next_utility = -100
+        chosen_dist = 0
         if len(visited) == 0:
 
             for atomic_waypoint in waypoints:
@@ -55,20 +61,20 @@ class UtilityStrategy:
         else:
             home_wp = self.getReturnWaypoint(waypoints)
             home_cost = self.getWaypointCosts(home_wp, dronestate)
-
             next_wp = home_wp
             next_utility = home_wp.getRewardValue() - home_cost
 
             for atomic_waypoint in waypoints:
                 if atomic_waypoint not in visited:
-                    wp_cost = self.getWaypointCosts(atomic_waypoint, dronestate)
+                    wp_cost_distance= self.getWaypointCosts(atomic_waypoint, dronestate)
                     wp_reward = atomic_waypoint.getRewardValue()
-                    wp_utility = wp_reward - wp_cost
+                    wp_utility = wp_reward - wp_cost_distance[0]
 
                     if wp_utility > next_utility:
                         next_wp = atomic_waypoint
                         next_utility = wp_utility
+                        chosen_dist = wp_cost_distance[1]
 
         print("waypoint was chosen and it is worth", next_utility, "points")
+        self.drone_range -= chosen_dist
         return next_wp
-              
