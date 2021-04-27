@@ -6,7 +6,8 @@ from predict import predict
 class UtilityStrategy:
 
     counter = 0
-    drone_range = 1215 #Meters
+    # drone_range = 1215 #Meters
+    drone_range = 15000
 
     def _calcDistance(self, waypoint, data):
         currentX = float(data.get("position_x"))
@@ -47,6 +48,7 @@ class UtilityStrategy:
         next_wp = home_wp
         next_utility = home_wp.getRewardValue() - home_cost[0]
         chosen_dist = 0
+        wp_reward = 0
 
         for atomic_waypoint in waypoints:
             if atomic_waypoint not in visited:
@@ -57,10 +59,10 @@ class UtilityStrategy:
                     next_wp = atomic_waypoint
                     next_utility = wp_utility
                     chosen_dist = wp_cost_distance[1]
-                    print("Reward: ", wp_reward)
-                    print("Utility: ", wp_utility)
-                    print("Distance: ", wp_cost_distance)
 
-        print("waypoint was chosen and it is worth", next_utility, "points")
+        print("###############################################")
+        print("Reward: ", wp_reward)
+        print("Utility: ", next_utility)
+        print("Distance: ", wp_cost_distance)
         self.drone_range -= chosen_dist
         return next_wp
