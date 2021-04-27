@@ -8,7 +8,7 @@ class UtilityStrategy:
 
     counter = 0
     drone_range = 2430 #Meters
-    homeWP = None;
+    homeWP = None
 
 
     def _calcDistance(self, waypoint, data):
@@ -21,7 +21,7 @@ class UtilityStrategy:
         return math.sqrt(math.pow(wp.x_lat - currentX, 2) + math.pow(wp.y_long - currentY, 2) + math.pow(wp.z_alt - currentZ, 2))
 
     def calcWPDistanceToHome(self,waypoint):
-        home_wp = getHomeCoordinates
+        home_wp = self.getHomeCoordinates()
         homeX = home_wp[0]
         homeY = home_wp[1]
         homeZ = home_wp[2]
@@ -36,7 +36,7 @@ class UtilityStrategy:
 
         if distance > self.drone_range:
             cost = float("inf")
-        elif calcWPDistanceToHome(waypoint) > self.drone_range - distance:
+        elif self.calcWPDistanceToHome(waypoint) > self.drone_range - distance:
             cost = float("inf")
         else: cost = distance * math.e**(1/(-1*(distance-self.drone_range))) + distance
 
@@ -53,16 +53,17 @@ class UtilityStrategy:
 
     def getReturnWaypoint(self, waypoints):
         # searches in the list of waypoints for the waypoint detailing a return to home, and returns it
-        if homeWP return homeWP
+        if self.homeWP is not None:
+            return self.homeWP
         else:
-        for atomic_waypoint in waypoints:
-            for WPWapper in atomic_waypoint.waypoints:
-                if WPWapper.commandID == 20:
-                    home_wp = atomic_waypoint
-                    return atomic_waypoint
+            for atomic_waypoint in waypoints:
+                for WPWapper in atomic_waypoint.waypoints:
+                    if WPWapper.commandID == 20:
+                        self.homeWP = atomic_waypoint
+                        return atomic_waypoint
 
     def getHomeCoordinates(self):
-        homewp = getReturnWaypoint()
+        home_wp = self.getReturnWaypoint()
         x = home_wp.waypoints[0].waypoint.x_lat
         y = home_wp.waypoints[0].waypoint.y_long
         z = home_wp.waypoints[0].waypoint.z_alt
@@ -83,13 +84,14 @@ class UtilityStrategy:
         if depth < LOOKAHEAD_DEPTH:
             for atomic_waypoint_lookahead in waypoints:
                 if not atomic_waypoint_lookahead == atomic_waypoint and atomic_waypoint_lookahead not in visited:
-                    lookahead_utility = calcUtility(atomic_waypoint_lookahead, waypoints, visited, dronestate, depth+1)
-                    if single_wp_utility + lookahead_utility > total_utility
+                    lookahead_utility = self.calcUtility(atomic_waypoint_lookahead, waypoints, visited, dronestate, depth+1)
+                    if single_wp_utility + lookahead_utility > total_utility:
                         total_utility = single_wp_utility + lookahead_utility
         return total_utility
 
     def getNext(self, waypoints, visited, dronestate):
-        
+        home_wp = self.getReturnWaypoint(waypoints)
+        home_cost = self.getWaypointCosts(home_wp, dronestate)
         next_wp = home_wp
         next_utility = home_wp.getRewardValue() - home_cost[0]
         chosen_dist = 0
@@ -98,12 +100,12 @@ class UtilityStrategy:
             if atomic_waypoint not in visited:
                 wputility = calcUtility(atomic_waypoint, waypoints, visited, dronestate)
                 if wp_utility > next_utility:
-                next_wp = atomic_waypoint
-                next_utility = wp_utility
-                chosen_dist = wp_cost_distance[1]
-                print("Reward: ", wp_reward)
-                print("Utility: ", wp_utility)
-                print("Distance: ", wp_cost_distance)
+                    next_wp = atomic_waypoint
+                    next_utility = wp_utility
+                    chosen_dist = wp_cost_distance[1]
+                    print("Reward: ", wp_reward)
+                    print("Utility: ", wp_utility)
+                    print("Distance: ", wp_cost_distance)
 
         print("waypoint was chosen and it is worth", next_utility, "points")
         self.drone_range -= chosen_dist
