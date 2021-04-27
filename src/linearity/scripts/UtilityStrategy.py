@@ -78,7 +78,7 @@ class UtilityStrategy:
 
         total_utility = single_wp_utility
 
-        if depth < LOOKAHEAD_DEPTH:
+        if depth < LOOKAHEAD_DEPTH and atomic_waypoint is not home_wp:
             for atomic_waypoint_lookahead in waypoints:
                 if not atomic_waypoint_lookahead == atomic_waypoint and atomic_waypoint_lookahead not in visited:
                     lookahead_utility = self.calcUtility(atomic_waypoint_lookahead, waypoints, visited, dronestate, depth+1)
