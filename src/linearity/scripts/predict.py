@@ -4,7 +4,6 @@ import time
 
 
 def predict(stateList, counter):
-    print("#####Starting to Predict#####")
     evaluate_binary = '/exact/evaluate_rnn'
     genome = '/catkin_ws/genomes/truncated_current_position_genome.bin'
 
