@@ -6,7 +6,9 @@ from predict import predict
 class UtilityStrategy:
 
     counter = 0
-    drone_range = 1215 #Meters
+    drone_range = 2430 #Meters
+    homeWP = None;
+
 
     def _calcDistance(self, waypoint, data):
         currentX = float(data.get("position_x"))
@@ -17,16 +19,30 @@ class UtilityStrategy:
         wp = waypoint.waypoints[0].waypoint
         return math.sqrt(math.pow(wp.x_lat - currentX, 2) + math.pow(wp.y_long - currentY, 2) + math.pow(wp.z_alt - currentZ, 2))
 
+    def calcWPDistanceToHome(self,waypoint):
+        home_wp = getHomeCoordinates
+        homeX = home_wp[0]
+        homeY = home_wp[1]
+        homeZ = home_wp[2]
+        wp = waypoint.waypoints[0].waypoint
+        return math.sqrt(math.pow(wp.x_lat - homeX, 2) + math.pow(wp.y_long - homeY, 2) + math.pow(wp.z_alt - homeZ, 2))
 
     def getWaypointCosts(self, waypoint, dronestate):
 
         self.counter += 1
         predictions = predict(dronestate, self.counter)
         distance = float(self._calcDistance(waypoint, predictions))
-        if distance < self.drone_range:
-            cost = distance * math.e**(1/(-1*(distance-self.drone_range))) + distance
-        else:
+
+        if distance > self.drone_range:
             cost = float("inf")
+        elif calcWPDistanceToHome(waypoint) > self.drone_range - distance:
+            cost = float("inf")
+        else: cost = distance * math.e**(1/(-1*(distance-self.drone_range))) + distance
+
+        # if distance < self.drone_range:
+        #     cost = distance * math.e**(1/(-1*(distance-self.drone_range))) + distance
+        # else:
+        #     cost = float("inf")
         return cost,distance
 
 
@@ -36,30 +52,48 @@ class UtilityStrategy:
 
     def getReturnWaypoint(self, waypoints):
         # searches in the list of waypoints for the waypoint detailing a return to home, and returns it
+        if homeWP return homeWP
+        else:
         for atomic_waypoint in waypoints:
             for WPWapper in atomic_waypoint.waypoints:
                 if WPWapper.commandID == 20:
+                    home_wp = atomic_waypoint
                     return atomic_waypoint
 
-    def getNext(self, waypoints, visited, dronestate):
+    def getHomeCoordinates(self):
+        homewp = getReturnWaypoint()
+        x = home_wp.waypoints[0].waypoint.x_lat
+        y = home_wp.waypoints[0].waypoint.y_long
+        z = home_wp.waypoints[0].waypoint.z_alt
+        return x,y,z
+
+    def calcUtility(self, atomic_waypoint, waypoints, visited, dronestate):
         home_wp = self.getReturnWaypoint(waypoints)
         home_cost = self.getWaypointCosts(home_wp, dronestate)
+        
+        chosen_dist = 0
+
+        wp_cost_distance = self.getWaypointCosts(atomic_waypoint, dronestate)
+        wp_reward = atomic_waypoint.getRewardValue()
+        wp_utility = wp_reward - wp_cost_distance[0]
+
+        if wp_utility > next_utility:
+            next_wp = atomic_waypoint
+            next_utility = wp_utility
+            chosen_dist = wp_cost_distance[1]
+            print("Reward: ", wp_reward)
+            print("Utility: ", wp_utility)
+            print("Distance: ", wp_cost_distance)
+
+    def getNext(self, waypoints, visited, dronestate):
+        
         next_wp = home_wp
         next_utility = home_wp.getRewardValue() - home_cost[0]
         chosen_dist = 0
 
         for atomic_waypoint in waypoints:
             if atomic_waypoint not in visited:
-                wp_cost_distance = self.getWaypointCosts(atomic_waypoint, dronestate)
-                wp_reward = atomic_waypoint.getRewardValue()
-                wp_utility = wp_reward - wp_cost_distance[0]
-                if wp_utility > next_utility:
-                    next_wp = atomic_waypoint
-                    next_utility = wp_utility
-                    chosen_dist = wp_cost_distance[1]
-                    print("Reward: ", wp_reward)
-                    print("Utility: ", wp_utility)
-                    print("Distance: ", wp_cost_distance)
+                calcUtility(atomic_waypoint, waypoints, visited, dronestate)
 
         print("waypoint was chosen and it is worth", next_utility, "points")
         self.drone_range -= chosen_dist
