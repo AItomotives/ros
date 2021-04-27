@@ -53,24 +53,21 @@ class UtilityStrategy:
 
     def getReturnWaypoint(self, waypoints):
         # searches in the list of waypoints for the waypoint detailing a return to home, and returns it
-        if self.homeWP is not None:
-            return self.homeWP
-        else:
-            for atomic_waypoint in waypoints:
-                for WPWapper in atomic_waypoint.waypoints:
-                    if WPWapper.commandID == 20:
-                        self.homeWP = atomic_waypoint
-                        return atomic_waypoint
+        for atomic_waypoint in waypoints:
+            for WPWapper in atomic_waypoint.waypoints:
+                if WPWapper.commandID == 20:
+                    self.homeWP = atomic_waypoint
+                    return atomic_waypoint
 
     def getHomeCoordinates(self):
-        home_wp = self.getReturnWaypoint()
+        home_wp = self.homeWP
         x = home_wp.waypoints[0].waypoint.x_lat
         y = home_wp.waypoints[0].waypoint.y_long
         z = home_wp.waypoints[0].waypoint.z_alt
         return x,y,z
 
     def calcUtility(self, atomic_waypoint, waypoints, visited, dronestate, depth=0):
-        home_wp = self.getReturnWaypoint(waypoints)
+        home_wp = self.homeWP
         home_cost = self.getWaypointCosts(home_wp, dronestate)
         
         chosen_dist = 0
@@ -90,7 +87,10 @@ class UtilityStrategy:
         return total_utility
 
     def getNext(self, waypoints, visited, dronestate):
-        home_wp = self.getReturnWaypoint(waypoints)
+
+        self.homeWP = self.getReturnWaypoint(waypoints)
+
+        home_wp = self.homeWP
         home_cost = self.getWaypointCosts(home_wp, dronestate)
         next_wp = home_wp
         next_utility = home_wp.getRewardValue() - home_cost[0]
