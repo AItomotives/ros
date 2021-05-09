@@ -40,5 +40,5 @@ If this is the first time, this may take a while, as the docker container will b
 
 ### Starting a Mission Planner mission
 1. With MissionPlanner and Ardupilot running, the simulated drone should automatically connect.
-2. In the Plan tab on MissionPlanner, either create your own mission with waypoints, or run an existing waypoints file by Loading one. Write the waypoints when you're finishing editing them. Reward commands need to be added manually by changing the command type to UNKNOWN, entering the command ID of 26, and setting the first field to the value of the reward.
+2. In the Plan tab on MissionPlanner, either create your own mission with waypoints, or run an existing waypoints file by Loading one. Write the waypoints when you're finishing editing them. Reward commands need to be added manually by changing the command type to UNKNOWN, entering the command ID of 26, and setting the first field to the value of the reward. You can also set the coordinates and altitude of the reward waypoint in the last three boxes of the command to exactly the same as the waypoint command to make the visuals more appealing.
 3. On the Actions tab, make sure Mission Start is selected in the top left drop down box, select Arm/Disarm to arm the drone, then select Do Action to begin the mission.
