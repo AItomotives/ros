@@ -77,7 +77,8 @@ if __name__ == '__main__':
     global needToBuild
     needToBuild = True
     global waypointManager
-    waypointManager = WaypointManager(UtilityStrategy())
+    # waypointManager = WaypointManager(UtilityStrategy())
+    waypointManager = WapypointManager(SmartStrategy())
     global curwaypoint
     curwaypoint = 0
     listener()
