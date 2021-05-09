@@ -1,5 +1,5 @@
 # ros
-In the AItomotives Ardupilot Docker image, once Ardupilot is running and connected to MissionPlanner.
+More in depth ROS commands. You won't need to do these things all of the time, as the setup scrips handle most of it. You'll see these steps in the scripts that you run, so here is a way to do it manually.
 
 In order to get access to the ros commands, everytime you open a new container, run `source $rossetup`.
 
